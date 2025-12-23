@@ -33,12 +33,19 @@ uint8_t  g_read_data[WRITE_ITEM_SIZE];
 bool CAN_Flag = false;
 extern TX_THREAD can_thread;
 
+/* Memory pool for passing messages to the CAN thread */
+#define CAN_MESSAGE_POOL_SIZE (16 * (sizeof(can_msg_t) + sizeof(void *)))
+TX_BYTE_POOL g_can_message_pool;
+static uint8_t g_can_message_pool_buffer[CAN_MESSAGE_POOL_SIZE];
+
+
 /* Function Declaration */
 static UINT filex_qspi_levelx_operation(void);
 static fsp_err_t erase_qspi_flash(void);
 static void get_current_date_time(time_format_t * time);
 static void assign_month_value(time_format_t * time, char * read_buffer);
 static void deinit_media(void);
+static UINT start_file_transfer_to_queue(CHAR *p_filename);
 
 /* FileX_Thread entry function */
 void filex_thread_entry(void)
@@ -48,6 +55,14 @@ void filex_thread_entry(void)
 
     /* Initialize the RTT Thread.*/
     rtt_thread_init_check();
+
+    /* Create a byte memory pool for CAN messages */
+    fx_ret_val = tx_byte_pool_create(&g_can_message_pool, "CAN Message Pool", g_can_message_pool_buffer, CAN_MESSAGE_POOL_SIZE);
+    if (TX_SUCCESS != fx_ret_val)
+    {
+        PRINT_ERR_STR("Failed to create CAN message byte pool\r\n");
+        ERROR_TRAP(fx_ret_val);
+    }
 
     /* print the banner and EP info. */
     app_rtt_print_data(RTT_OUTPUT_MESSAGE_BANNER, RESET_VALUE, NULL);
@@ -414,6 +429,93 @@ static UINT filex_qspi_levelx_operation(void)
             tx_thread_resume(&can_thread);
         }
         break;
+        case FILE_1_READ:
+        {
+            PRINT_INFO_STR("Successfully entered file 1 read");
+
+            /* Open media for file operations */
+            status = fx_media_open(&g_fx_media0,
+                                   "&g_fx_media0",
+                                   RM_FILEX_LEVELX_NOR_DeviceDriver,
+                                   (void *) &g_rm_filex_levelx_nor_instance,
+                                   g_fx_media0_media_memory,
+                                   G_FX_MEDIA0_MEDIA_MEMORY_SIZE);
+            if(FX_SUCCESS != status)
+            {
+                PRINT_ERR_STR("Media open failed");
+                return status;
+            }
+
+            /* Open the file for read */
+            status = fx_file_open(&g_fx_media0, &g_file, file_name1, FX_OPEN_FOR_READ);
+            if (FX_SUCCESS != status)
+            {
+                PRINT_ERR_STR("File open for read failed");
+                fx_media_close(&g_fx_media0);
+                return status;
+            }
+
+            /* Fill read buffer with zero */
+            memset(&g_read_data, RESET_VALUE, WRITE_ITEM_SIZE);
+
+            /* Read the file, leaving room for a null terminator. */
+            status = fx_file_read(&g_file, g_read_data, WRITE_ITEM_SIZE - 1, &read_size);
+            if ((FX_SUCCESS != status) && (FX_END_OF_FILE != status))
+            {
+                PRINT_ERR_STR("File read failed");
+                fx_file_close(&g_file);
+                fx_media_close(&g_fx_media0);
+                return status;
+            }
+
+            /* Data is binary, not a string. Print a sample in hex format. */
+            PRINT_INFO_STR("Read data from File1 successfully.");
+            APP_PRINT("Read %lu bytes. Displaying first 32 bytes:\r\n", read_size);
+            for(uint32_t i = 0; (i < 32) && (i < read_size); i++)
+            {
+                APP_PRINT("0x%02X ", g_read_data[i]);
+            }
+            APP_PRINT("\r\n");
+
+            /* Close the file and media from the read operation before starting the CAN send */
+            status = fx_file_close(&g_file);
+            if (FX_SUCCESS != status)
+            {
+                PRINT_ERR_STR("File close failed");
+                fx_media_close(&g_fx_media0);
+                return status;
+            }
+
+            status = fx_media_close(&g_fx_media0);
+            if (FX_SUCCESS != status)
+            {
+                PRINT_ERR_STR("Media close failed");
+                return status;
+            }
+            PRINT_INFO_STR("File read operation successful.");
+
+            /* Resume the CAN thread so it is ready to receive messages */
+            PRINT_INFO_STR("Resuming CAN thread...");
+            status = tx_thread_resume(&can_thread);
+            if ((TX_SUCCESS != status) && (TX_RESUME_ERROR != status))
+            {
+                PRINT_ERR_STR("Failed to resume CAN thread.");
+                return status;
+            }
+
+            /* Start the file transfer by sending messages to the CAN thread */
+            PRINT_INFO_STR("Queueing file for CAN transmission...");
+            status = start_file_transfer_to_queue(file_name1);
+            if (TX_SUCCESS != status)
+            {
+                PRINT_ERR_STR("File transfer to queue failed.");
+            }
+            else
+            {
+                PRINT_INFO_STR("File transfer to queue successful.");
+            }
+        }
+        break;
         default:
         {
             PRINT_INFO_STR("Please enter a valid input");
@@ -619,6 +721,146 @@ static void assign_month_value(time_format_t * time, char * read_buffer)
         }
         break;
     }
+}
+
+/*******************************************************************************************************************//**
+ * @brief       Reads a file and sends its contents to the CAN message queue.
+ * @param[IN]   p_filename              Name of the file to send.
+ * @retval      FX_SUCCESS              Upon successful completion.
+ * @retval      Any other error code    If file transfer fails.
+ **********************************************************************************************************************/
+static UINT start_file_transfer_to_queue(CHAR *p_filename)
+{
+    UINT status = FX_SUCCESS;
+    UINT read_status = FX_SUCCESS;
+    FX_FILE my_file;
+    ULONG file_size = 0;
+    ULONG actual_bytes_read = 0;
+    uint16_t sequence_no = 0;
+    can_msg_t *p_can_msg = NULL;
+
+    /* Open media */
+    status = fx_media_open(&g_fx_media0, (CHAR *)"&g_fx_media0", RM_FILEX_LEVELX_NOR_DeviceDriver,
+                           (void *) &g_rm_filex_levelx_nor_instance, g_fx_media0_media_memory, G_FX_MEDIA0_MEDIA_MEMORY_SIZE);
+    if(FX_SUCCESS != status)
+    {
+        PRINT_ERR_STR("[PRODUCER] Media open failed\r\n");
+        return status;
+    }
+
+    /* Open file */
+    status = fx_file_open(&g_fx_media0, &my_file, p_filename, FX_OPEN_FOR_READ);
+    if (FX_SUCCESS != status)
+    {
+        PRINT_ERR_STR("[PRODUCER] File open failed\r\n");
+        fx_media_close(&g_fx_media0);
+        return status;
+    }
+
+    file_size = my_file.fx_file_current_file_size;
+
+    /* --- 1. Send SOT Message --- */
+    PRINT_INFO_STR("[PRODUCER] Queueing SOT message...\r\n");
+    status = tx_byte_allocate(&g_can_message_pool, (VOID **) &p_can_msg, sizeof(can_msg_t), TX_WAIT_FOREVER);
+    if (TX_SUCCESS != status)
+    {
+        PRINT_ERR_STR("[PRODUCER] Failed to allocate memory for SOT message\r\n");
+    }
+    else
+    {
+        p_can_msg->msg_type = CAN_MSG_TYPE_SOT;
+        p_can_msg->payload.file_size = file_size;
+
+        status = tx_queue_send(&g_can_tx_queue, &p_can_msg, TX_WAIT_FOREVER);
+        if (TX_SUCCESS != status)
+        {
+            PRINT_ERR_STR("[PRODUCER] Failed to send SOT message to queue\r\n");
+            tx_byte_release(p_can_msg);
+        }
+    }
+
+    if (TX_SUCCESS != status) // Abort if SOT failed
+    {
+        fx_file_close(&my_file);
+        fx_media_close(&g_fx_media0);
+        return status;
+    }
+
+
+    /* --- 2. Send DATA Messages --- */
+    PRINT_INFO_STR("[PRODUCER] Queueing DATA messages...\r\n");
+    ULONG data_packets_queued = 0; // Counter for DATA messages
+    do
+    {
+        // Allocate memory for the DATA message first
+        status = tx_byte_allocate(&g_can_message_pool, (VOID **) &p_can_msg, sizeof(can_msg_t), TX_WAIT_FOREVER);
+        if (TX_SUCCESS != status)
+        {
+            PRINT_ERR_STR("[PRODUCER] Failed to allocate memory for DATA message\r\n");
+            break; // Exit loop
+        }
+
+        read_status = fx_file_read(&my_file, p_can_msg->payload.data_packet.data, CAN_DATA_MAX_SIZE, &actual_bytes_read);
+        if ((FX_SUCCESS != read_status) && (FX_END_OF_FILE != read_status))
+        {
+            PRINT_ERR_STR("[PRODUCER] File read failed during transfer\r\n");
+            tx_byte_release(p_can_msg); // Release allocated memory
+            status = read_status;
+            break; // Exit loop
+        }
+
+        if (actual_bytes_read > 0)
+        {
+            p_can_msg->msg_type = CAN_MSG_TYPE_DATA;
+            p_can_msg->payload.data_packet.length = (uint8_t)actual_bytes_read;
+            p_can_msg->payload.data_packet.sequence_no = sequence_no;
+
+            status = tx_queue_send(&g_can_tx_queue, &p_can_msg, TX_WAIT_FOREVER);
+            if (TX_SUCCESS != status)
+            {
+                PRINT_ERR_STR("[PRODUCER] Failed to send DATA message to queue\r\n");
+                tx_byte_release(p_can_msg); // Release memory
+                break; // Exit loop
+            }
+            sequence_no++;
+            data_packets_queued++; // Increment counter
+        }
+        else
+        {
+             tx_byte_release(p_can_msg); // No bytes read, release memory
+        }
+
+    } while (FX_END_OF_FILE != read_status);
+    APP_PRINT("[PRODUCER] Queued %lu DATA packets.\r\n", data_packets_queued); // New print after loop
+
+
+    /* --- 3. Send EOT Message --- */
+    if (FX_SUCCESS == status || FX_END_OF_FILE == read_status)
+    {
+        PRINT_INFO_STR("[PRODUCER] Queueing EOT message...\r\n");
+        status = tx_byte_allocate(&g_can_message_pool, (VOID **) &p_can_msg, sizeof(can_msg_t), TX_WAIT_FOREVER);
+        if (TX_SUCCESS != status)
+        {
+            PRINT_ERR_STR("[PRODUCER] Failed to allocate memory for EOT message\r\n");
+        }
+        else
+        {
+            p_can_msg->msg_type = CAN_MSG_TYPE_EOT;
+
+            status = tx_queue_send(&g_can_tx_queue, &p_can_msg, TX_WAIT_FOREVER);
+            if (TX_SUCCESS != status)
+            {
+                PRINT_ERR_STR("[PRODUCER] Failed to send EOT message to queue\r\n");
+                tx_byte_release(p_can_msg);
+            }
+        }
+    }
+
+    /* --- 4. Cleanup --- */
+    fx_file_close(&my_file);
+    fx_media_close(&g_fx_media0);
+
+    return status;
 }
 
 /*******************************************************************************************************************//**

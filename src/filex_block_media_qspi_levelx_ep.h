@@ -23,6 +23,7 @@
 		                                    "\r\n3. Enter 3 to create a text file on QSPI Flash and write pre-defined data."\
 		                                    "\r\n4. Enter 4 to create another text file on QSPI Flash, write and read pre-defined data."\
 		                                    "\r\n5. Enter 5 to test that it enters CAN loop"\
+                                            "\r\n6. Enter 6 to print the file 1 data"\
 		                                    "\r\n   Compare the read and write data"\
 		                                    "\r\nUser Input:  "
 
@@ -34,6 +35,7 @@ typedef enum menu_option
     FILE_1_WRITE                = 3,
     FILE_2_WRITE_READ_COMPARE   = 4,
     CAN_TEST                    = 5,
+    FILE_1_READ                 = 6,
 }menu_option_t;
 
 /* Macro for buffer size to read date and time */

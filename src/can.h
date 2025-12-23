@@ -23,6 +23,17 @@
 #define EXTENDED_ID_EXAMPLE             (0x12345678)
 #define CAN_BUSY_DELAY                  (5000U)
 
+/* CAN File Transfer Protocol Definitions */
+#define CAN_ID_FILE_CONTROL             (0x710)
+#define CAN_ID_FILE_DATA                (0x711)
+
+typedef enum e_can_file_transfer_opcodes
+{
+    SOT_PACKET = 0x01, /* Start of Transfer */
+    EOT_PACKET = 0x03, /* End of Transfer */
+} can_file_transfer_opcodes_t;
+
+
 #include "can_thread.h"
 #include "rtt_thread.h"
 #include "filex_thread.h"
@@ -52,5 +63,40 @@ typedef struct
 
 void can_init (void);
 fsp_err_t can_transmit(can_node_t *p_node, can_frame_t *p_frame);
+
+
+/* Inter-thread message queue definitions */
+#define CAN_DATA_MAX_SIZE       (6)  /* Max data bytes in a DATA packet */
+
+/* Defines the type of message sent to the CAN thread */
+typedef enum e_can_msg_type
+{
+    CAN_MSG_TYPE_SOT,  /* Start of Transfer */
+    CAN_MSG_TYPE_DATA, /* Data chunk */
+    CAN_MSG_TYPE_EOT,  /* End of Transfer */
+} can_msg_type_t;
+
+/* Defines the message structure for the CAN transmission queue */
+typedef struct s_can_msg
+{
+    can_msg_type_t msg_type;
+    union
+    {
+        /* For SOT message */
+        uint32_t file_size;
+
+        /* For DATA message */
+        struct
+        {
+            uint8_t data[CAN_DATA_MAX_SIZE];
+            uint8_t length;
+            uint16_t sequence_no;
+        } data_packet;
+    } payload;
+} can_msg_t;
+
+/* Queue for sending data from other threads to the can_thread for transmission */
+extern TX_QUEUE g_can_tx_queue;
+
 
 #endif /* CAN_H_ */
