@@ -50,7 +50,7 @@
 
 #define APP_ERR_TRAP(err)        ({if(err) {\
         SEGGER_RTT_printf(SEGGER_INDEX, "\r\nReturned Error Code: 0x%x  \r\n", (err));\
-        /*__asm("BKPT #0\n"); */}}) /* trap upon the error  */
+        __asm("BKPT #0\n");}}) /* trap upon the error  */
 
 #define APP_READ(read_data)     (SEGGER_RTT_Read (SEGGER_INDEX, (read_data), sizeof(read_data)))
 
@@ -139,7 +139,6 @@ UINT check_for_rtt_user_ip(uint8_t * p_get_data);
 UINT rtt_framework_init(void);
 void rtt_thread_init_check(void);
 void rtt_thread_service_cleanup(void);
-uint32_t crc32_calculate(uint8_t *p_data, uint32_t length);
 
 #endif /* rtos aware RTT ds and func */
 

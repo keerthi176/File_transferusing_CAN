@@ -295,27 +295,27 @@
       <property id="module.driver.qspi.qspclk_div" value="module.driver.qspi.qspclk_div.qspclk_div_2"/>
       <property id="module.driver.qspi.min_qssl_deselect_cycles" value="module.driver.qspi.min_qssl_deselect_cycles.qssl_min_high_level_4_qspclk"/>
     </module>
-    <module id="module.driver.can_on_can.1035799757">
+    <module id="module.driver.can_on_can.85566480">
       <property id="module.driver.can.name" value="g_can0"/>
       <property id="module.driver.can.channel" value="0"/>
       <property id="module.driver.can.clock_source" value="module.driver.can.clock_source.canmclk"/>
       <property id="module.driver.can.sample_point" value="75"/>
       <property id="module.driver.can.baud_rate" value="500000"/>
-      <property id="module.driver.can.override_baud_setting" value="module.driver.can.override_baud_setting.enabled"/>
-      <property id="module.driver.can.baud_rate_prescaler" value="4"/>
-      <property id="module.driver.can.time_segment_1" value="module.driver.can.time_segment_1.tq10"/>
-      <property id="module.driver.can.time_segment_2" value="module.driver.can.time_segment_2.tq4"/>
-      <property id="module.driver.can.sync_jump_width" value="module.driver.can.sync_jump_width.tq4"/>
+      <property id="module.driver.can.override_baud_setting" value="module.driver.can.override_baud_setting.disabled"/>
+      <property id="module.driver.can.baud_rate_prescaler" value="1"/>
+      <property id="module.driver.can.time_segment_1" value="module.driver.can.time_segment_1.tq4"/>
+      <property id="module.driver.can.time_segment_2" value="module.driver.can.time_segment_2.tq2"/>
+      <property id="module.driver.can.sync_jump_width" value="module.driver.can.sync_jump_width.tq1"/>
       <property id="module.driver.can.p_callback" value="can_callback"/>
-      <property id="module.driver.can.message_mode" value="module.driver.can.message_mode.overrun"/>
-      <property id="module.driver.can.global_id_mode" value="module.driver.can.global_id_mode.standard"/>
+      <property id="module.driver.can.message_mode" value="module.driver.can.message_mode.overwrite"/>
+      <property id="module.driver.can.global_id_mode" value="module.driver.can.global_id_mode.mixed"/>
       <property id="module.driver.can.mailbox_count" value="module.driver.can.mailbox_count.4"/>
       <property id="module.driver.can.rxfifo_id1.id" value="0"/>
       <property id="module.driver.can.rxfifo_id2.id" value="0x12345678"/>
       <property id="module.driver.can.mailbox0_id" value="32"/>
       <property id="module.driver.can.mailbox1_id" value="33"/>
-      <property id="module.driver.can.mailbox2_id" value="256"/>
-      <property id="module.driver.can.mailbox3_id" value="258"/>
+      <property id="module.driver.can.mailbox2_id" value="34"/>
+      <property id="module.driver.can.mailbox3_id" value="35"/>
       <property id="module.driver.can.mailbox4_id" value="4"/>
       <property id="module.driver.can.mailbox5_id" value="5"/>
       <property id="module.driver.can.mailbox6_id" value="6"/>
@@ -457,27 +457,27 @@
       <property id="module.driver.can.ipl" value="board.icu.common.irq.priority12"/>
       <property id="module.driver.can.txfifo_int_mode" value="module.driver.can.txfifo_int_mode.empty"/>
     </module>
-    <module id="module.driver.can_on_can.761098552">
+    <module id="module.driver.can_on_can.1133357793">
       <property id="module.driver.can.name" value="g_can1"/>
       <property id="module.driver.can.channel" value="1"/>
       <property id="module.driver.can.clock_source" value="module.driver.can.clock_source.canmclk"/>
       <property id="module.driver.can.sample_point" value="75"/>
       <property id="module.driver.can.baud_rate" value="500000"/>
-      <property id="module.driver.can.override_baud_setting" value="module.driver.can.override_baud_setting.enabled"/>
-      <property id="module.driver.can.baud_rate_prescaler" value="4"/>
-      <property id="module.driver.can.time_segment_1" value="module.driver.can.time_segment_1.tq10"/>
-      <property id="module.driver.can.time_segment_2" value="module.driver.can.time_segment_2.tq4"/>
-      <property id="module.driver.can.sync_jump_width" value="module.driver.can.sync_jump_width.tq4"/>
+      <property id="module.driver.can.override_baud_setting" value="module.driver.can.override_baud_setting.disabled"/>
+      <property id="module.driver.can.baud_rate_prescaler" value="1"/>
+      <property id="module.driver.can.time_segment_1" value="module.driver.can.time_segment_1.tq4"/>
+      <property id="module.driver.can.time_segment_2" value="module.driver.can.time_segment_2.tq2"/>
+      <property id="module.driver.can.sync_jump_width" value="module.driver.can.sync_jump_width.tq1"/>
       <property id="module.driver.can.p_callback" value="can_callback"/>
-      <property id="module.driver.can.message_mode" value="module.driver.can.message_mode.overrun"/>
-      <property id="module.driver.can.global_id_mode" value="module.driver.can.global_id_mode.standard"/>
+      <property id="module.driver.can.message_mode" value="module.driver.can.message_mode.overwrite"/>
+      <property id="module.driver.can.global_id_mode" value="module.driver.can.global_id_mode.mixed"/>
       <property id="module.driver.can.mailbox_count" value="module.driver.can.mailbox_count.4"/>
       <property id="module.driver.can.rxfifo_id1.id" value="0"/>
-      <property id="module.driver.can.rxfifo_id2.id" value="0"/>
+      <property id="module.driver.can.rxfifo_id2.id" value="0x12345678"/>
       <property id="module.driver.can.mailbox0_id" value="32"/>
       <property id="module.driver.can.mailbox1_id" value="33"/>
-      <property id="module.driver.can.mailbox2_id" value="256"/>
-      <property id="module.driver.can.mailbox3_id" value="258"/>
+      <property id="module.driver.can.mailbox2_id" value="34"/>
+      <property id="module.driver.can.mailbox3_id" value="35"/>
       <property id="module.driver.can.mailbox4_id" value="4"/>
       <property id="module.driver.can.mailbox5_id" value="5"/>
       <property id="module.driver.can.mailbox6_id" value="6"/>
@@ -507,7 +507,7 @@
       <property id="module.driver.can.mailbox30_id" value="30"/>
       <property id="module.driver.can.mailbox31_id" value="31"/>
       <property id="module.driver.can.rxfifo_id1.id_mode" value="module.driver.can.rxfifo_id1.id_mode.standard"/>
-      <property id="module.driver.can.rxfifo_id2.id_mode" value="module.driver.can.rxfifo_id2.id_mode.standard"/>
+      <property id="module.driver.can.rxfifo_id2.id_mode" value="module.driver.can.rxfifo_id2.id_mode.extended"/>
       <property id="module.driver.can.mailbox0_id_mode" value="module.driver.can.mailbox0_id_mode.standard"/>
       <property id="module.driver.can.mailbox1_id_mode" value="module.driver.can.mailbox1_id_mode.standard"/>
       <property id="module.driver.can.mailbox2_id_mode" value="module.driver.can.mailbox2_id_mode.standard"/>
@@ -543,7 +543,7 @@
       <property id="module.driver.can.mailbox0_type" value="module.driver.can.mailbox0_type.transmit"/>
       <property id="module.driver.can.mailbox1_type" value="module.driver.can.mailbox1_type.receive"/>
       <property id="module.driver.can.mailbox2_type" value="module.driver.can.mailbox2_type.receive"/>
-      <property id="module.driver.can.mailbox3_type" value="module.driver.can.mailbox3_type.transmit"/>
+      <property id="module.driver.can.mailbox3_type" value="module.driver.can.mailbox3_type.receive"/>
       <property id="module.driver.can.mailbox4_type" value="module.driver.can.mailbox4_type.receive"/>
       <property id="module.driver.can.mailbox5_type" value="module.driver.can.mailbox5_type.receive"/>
       <property id="module.driver.can.mailbox6_type" value="module.driver.can.mailbox6_type.receive"/>
@@ -572,7 +572,7 @@
       <property id="module.driver.can.mailbox29_type" value="module.driver.can.mailbox29_type.receive"/>
       <property id="module.driver.can.mailbox30_type" value="module.driver.can.mailbox30_type.receive"/>
       <property id="module.driver.can.mailbox31_type" value="module.driver.can.mailbox31_type.receive"/>
-      <property id="module.driver.can.rxfifo_id1.frame_type" value="module.driver.can.rxfifo_id1.frame_type.remote"/>
+      <property id="module.driver.can.rxfifo_id1.frame_type" value="module.driver.can.rxfifo_id1.frame_type.data"/>
       <property id="module.driver.can.rxfifo_id2.frame_type" value="module.driver.can.rxfifo_id2.frame_type.remote"/>
       <property id="module.driver.can.mailbox0_frame_type" value="module.driver.can.mailbox0_frame_type.remote"/>
       <property id="module.driver.can.mailbox1_frame_type" value="module.driver.can.mailbox1_frame_type.data"/>
@@ -606,9 +606,9 @@
       <property id="module.driver.can.mailbox29_frame_type" value="module.driver.can.mailbox29_frame_type.data"/>
       <property id="module.driver.can.mailbox30_frame_type" value="module.driver.can.mailbox30_frame_type.data"/>
       <property id="module.driver.can.mailbox31_frame_type" value="module.driver.can.mailbox31_frame_type.data"/>
-      <property id="module.driver.can.rxfifo_id1.mask" value="0x1FFFFFFF"/>
-      <property id="module.driver.can.rxfifo_id2.mask" value="0x1FFFFFFF"/>
-      <property id="module.driver.can.mailbox_0_to_3_group_mask" value="0x1FFFFFFF"/>
+      <property id="module.driver.can.rxfifo_id1.mask" value="0"/>
+      <property id="module.driver.can.rxfifo_id2.mask" value="0"/>
+      <property id="module.driver.can.mailbox_0_to_3_group_mask" value="0"/>
       <property id="module.driver.can.mailbox_4_to_7_group_mask" value="0x1FFFFFFF"/>
       <property id="module.driver.can.mailbox_8_to_11_group_mask" value="0x1FFFFFFF"/>
       <property id="module.driver.can.mailbox_12_to_15_group_mask" value="0x1FFFFFFF"/>
@@ -648,15 +648,15 @@
       <property id="rtos.threadx.thread.autostart" value="rtos.threadx.thread.autostart.enabled"/>
       <property id="rtos.threadx.thread.timeslice" value="1"/>
     </context>
-    <context id="rtos.threadx.thread.1828173641">
-      <property id="_symbol" value="can_app_thread"/>
+    <context id="rtos.threadx.thread.1397587669">
+      <property id="_symbol" value="can_thread"/>
       <property id="rtos.threadx.thread.name" value="CAN_Thread"/>
       <property id="rtos.threadx.thread.stack" value="1024"/>
-      <property id="rtos.threadx.thread.priority" value="1"/>
-      <property id="rtos.threadx.thread.autostart" value="rtos.threadx.thread.autostart.enabled"/>
+      <property id="rtos.threadx.thread.priority" value="2"/>
+      <property id="rtos.threadx.thread.autostart" value="rtos.threadx.thread.autostart.disabled"/>
       <property id="rtos.threadx.thread.timeslice" value="1"/>
-      <stack module="module.driver.can_on_can.1035799757"/>
-      <stack module="module.driver.can_on_can.761098552"/>
+      <stack module="module.driver.can_on_can.85566480"/>
+      <stack module="module.driver.can_on_can.1133357793"/>
     </context>
     <config id="config.azure.fx">
       <property id="config.azure.fx.error_checking" value="config.azure.fx.error_checking.enabled"/>

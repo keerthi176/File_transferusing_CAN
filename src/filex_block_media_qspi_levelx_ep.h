@@ -21,8 +21,9 @@
 		                                    "\r\n   It may take several minutes to complete."\
                                             "\r\n2. Enter 2 to format media."\
 		                                    "\r\n3. Enter 3 to create a text file on QSPI Flash and write pre-defined data."\
-                                            "\r\n4. Enter 4 to read and print the file content."\
-                                            "\r\n5. Enter 5 to send the file via CAN."\
+		                                    "\r\n4. Enter 4 to create another text file on QSPI Flash, write and read pre-defined data."\
+		                                    "\r\n5. Enter 5 to test that it enters CAN loop"\
+		                                    "\r\n   Compare the read and write data"\
 		                                    "\r\nUser Input:  "
 
 /* Enum for Menu Options */
@@ -31,8 +32,8 @@ typedef enum menu_option
     ERASE_QSPI_FLASH            = 1,
     FORMAT_MEDIA                = 2,
     FILE_1_WRITE                = 3,
-    READ_AND_PRINT_FILE         = 4,
-    SEND_FILE_VIA_CAN           = 5,
+    FILE_2_WRITE_READ_COMPARE   = 4,
+    CAN_TEST                    = 5,
 }menu_option_t;
 
 /* Macro for buffer size to read date and time */

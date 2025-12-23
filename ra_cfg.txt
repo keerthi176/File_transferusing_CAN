@@ -658,11 +658,11 @@ FSP Configuration
     Time slicing interval (ticks): 1
     
   Thread "CAN_Thread"
-    Symbol: can_app_thread
+    Symbol: can_thread
     Name: CAN_Thread
     Stack size (bytes): 1024
-    Priority: 1
-    Auto start: Enabled
+    Priority: 2
+    Auto start: Disabled
     Time slicing interval (ticks): 1
     
     Instance "g_can0 CAN (r_can)"
@@ -671,21 +671,21 @@ FSP Configuration
       General: Clock Source: Main oscillator (CANMCLK)
       Baud Rate Settings: Auto-generated Settings: Sample-Point (%): 75
       Baud Rate Settings: Auto-generated Settings: CAN Baud Rate (Hz): 500000
-      Baud Rate Settings: Override Auto-generated Settings: Override Baud Settings: Enabled
-      Baud Rate Settings: Override Auto-generated Settings: Baud Rate Prescaler: 4
-      Baud Rate Settings: Override Auto-generated Settings: Time Segment 1: 10 Time Quanta
-      Baud Rate Settings: Override Auto-generated Settings: Time Segment 2: 4 Time Quanta
-      Baud Rate Settings: Override Auto-generated Settings: Synchronization Jump Width: 4 Time Quanta
+      Baud Rate Settings: Override Auto-generated Settings: Override Baud Settings: Disabled
+      Baud Rate Settings: Override Auto-generated Settings: Baud Rate Prescaler: 1
+      Baud Rate Settings: Override Auto-generated Settings: Time Segment 1: 4 Time Quanta
+      Baud Rate Settings: Override Auto-generated Settings: Time Segment 2: 2 Time Quanta
+      Baud Rate Settings: Override Auto-generated Settings: Synchronization Jump Width: 1 Time Quanta
       Interrupts: Callback: can_callback
-      General: Overwrite/Overrrun Mode: Overrrun Mode
-      General: Global ID Mode: Standard ID Mode
+      General: Overwrite/Overrrun Mode: Overwrite Mode
+      General: Global ID Mode: Mixed ID Mode
       General: Number of Mailboxes: 4 Mailboxes
       Input: Receive FIFO: Receive ID 1: ID: 0
       Input: Receive FIFO: Receive ID 2: ID: 0x12345678
       Input: Mailbox 0-3 Group: Mailbox ID: Mailbox 0 ID: 32
       Input: Mailbox 0-3 Group: Mailbox ID: Mailbox 1 ID: 33
-      Input: Mailbox 0-3 Group: Mailbox ID: Mailbox 2 ID: 256
-      Input: Mailbox 0-3 Group: Mailbox ID: Mailbox 3 ID: 258
+      Input: Mailbox 0-3 Group: Mailbox ID: Mailbox 2 ID: 34
+      Input: Mailbox 0-3 Group: Mailbox ID: Mailbox 3 ID: 35
       Input: Mailbox 4-7 Group: Mailbox ID: Mailbox 4 ID: 4
       Input: Mailbox 4-7 Group: Mailbox ID: Mailbox 5 ID: 5
       Input: Mailbox 4-7 Group: Mailbox ID: Mailbox 6 ID: 6
@@ -833,21 +833,21 @@ FSP Configuration
       General: Clock Source: Main oscillator (CANMCLK)
       Baud Rate Settings: Auto-generated Settings: Sample-Point (%): 75
       Baud Rate Settings: Auto-generated Settings: CAN Baud Rate (Hz): 500000
-      Baud Rate Settings: Override Auto-generated Settings: Override Baud Settings: Enabled
-      Baud Rate Settings: Override Auto-generated Settings: Baud Rate Prescaler: 4
-      Baud Rate Settings: Override Auto-generated Settings: Time Segment 1: 10 Time Quanta
-      Baud Rate Settings: Override Auto-generated Settings: Time Segment 2: 4 Time Quanta
-      Baud Rate Settings: Override Auto-generated Settings: Synchronization Jump Width: 4 Time Quanta
+      Baud Rate Settings: Override Auto-generated Settings: Override Baud Settings: Disabled
+      Baud Rate Settings: Override Auto-generated Settings: Baud Rate Prescaler: 1
+      Baud Rate Settings: Override Auto-generated Settings: Time Segment 1: 4 Time Quanta
+      Baud Rate Settings: Override Auto-generated Settings: Time Segment 2: 2 Time Quanta
+      Baud Rate Settings: Override Auto-generated Settings: Synchronization Jump Width: 1 Time Quanta
       Interrupts: Callback: can_callback
-      General: Overwrite/Overrrun Mode: Overrrun Mode
-      General: Global ID Mode: Standard ID Mode
+      General: Overwrite/Overrrun Mode: Overwrite Mode
+      General: Global ID Mode: Mixed ID Mode
       General: Number of Mailboxes: 4 Mailboxes
       Input: Receive FIFO: Receive ID 1: ID: 0
-      Input: Receive FIFO: Receive ID 2: ID: 0
+      Input: Receive FIFO: Receive ID 2: ID: 0x12345678
       Input: Mailbox 0-3 Group: Mailbox ID: Mailbox 0 ID: 32
       Input: Mailbox 0-3 Group: Mailbox ID: Mailbox 1 ID: 33
-      Input: Mailbox 0-3 Group: Mailbox ID: Mailbox 2 ID: 256
-      Input: Mailbox 0-3 Group: Mailbox ID: Mailbox 3 ID: 258
+      Input: Mailbox 0-3 Group: Mailbox ID: Mailbox 2 ID: 34
+      Input: Mailbox 0-3 Group: Mailbox ID: Mailbox 3 ID: 35
       Input: Mailbox 4-7 Group: Mailbox ID: Mailbox 4 ID: 4
       Input: Mailbox 4-7 Group: Mailbox ID: Mailbox 5 ID: 5
       Input: Mailbox 4-7 Group: Mailbox ID: Mailbox 6 ID: 6
@@ -877,7 +877,7 @@ FSP Configuration
       Input: Mailbox 28-31 Group: Mailbox ID: Mailbox 30 ID: 30
       Input: Mailbox 28-31 Group: Mailbox ID: Mailbox 31 ID: 31
       Input: Receive FIFO: Receive ID 1: ID Mode: Standard ID
-      Input: Receive FIFO: Receive ID 2: ID Mode: Standard ID
+      Input: Receive FIFO: Receive ID 2: ID Mode: Extended ID
       Input: Mailbox 0-3 Group: Mailbox ID Mode: Mailbox 0 ID Mode: Standard ID
       Input: Mailbox 0-3 Group: Mailbox ID Mode: Mailbox 1 ID Mode: Standard ID
       Input: Mailbox 0-3 Group: Mailbox ID Mode: Mailbox 2 ID Mode: Standard ID
@@ -913,7 +913,7 @@ FSP Configuration
       Input: Mailbox 0-3 Group: Mailbox Type: Mailbox 0 Type: Transmit Mailbox
       Input: Mailbox 0-3 Group: Mailbox Type: Mailbox 1 Type: Receive Mailbox
       Input: Mailbox 0-3 Group: Mailbox Type: Mailbox 2 Type: Receive Mailbox
-      Input: Mailbox 0-3 Group: Mailbox Type: Mailbox 3 Type: Transmit Mailbox
+      Input: Mailbox 0-3 Group: Mailbox Type: Mailbox 3 Type: Receive Mailbox
       Input: Mailbox 4-7 Group: Mailbox Type: Mailbox 4 Type: Receive Mailbox
       Input: Mailbox 4-7 Group: Mailbox Type: Mailbox 5 Type: Receive Mailbox
       Input: Mailbox 4-7 Group: Mailbox Type: Mailbox 6 Type: Receive Mailbox
@@ -942,7 +942,7 @@ FSP Configuration
       Input: Mailbox 28-31 Group: Mailbox Type: Mailbox 29 Type: Receive Mailbox
       Input: Mailbox 28-31 Group: Mailbox Type: Mailbox 30 Type: Receive Mailbox
       Input: Mailbox 28-31 Group: Mailbox Type: Mailbox 31 Type: Receive Mailbox
-      Input: Receive FIFO: Receive ID 1: Frame Type: Remote Mailbox
+      Input: Receive FIFO: Receive ID 1: Frame Type: Data Mailbox
       Input: Receive FIFO: Receive ID 2: Frame Type: Remote Mailbox
       Input: Mailbox 0-3 Group: Mailbox Frame Type: Mailbox 0 Frame Type: Remote Mailbox
       Input: Mailbox 0-3 Group: Mailbox Frame Type: Mailbox 1 Frame Type: Data Mailbox
@@ -976,9 +976,9 @@ FSP Configuration
       Input: Mailbox 28-31 Group: Mailbox Frame Type: Mailbox 29 Frame Type: Data Mailbox
       Input: Mailbox 28-31 Group: Mailbox Frame Type: Mailbox 30 Frame Type: Data Mailbox
       Input: Mailbox 28-31 Group: Mailbox Frame Type: Mailbox 31 Frame Type: Data Mailbox
-      Input: Receive FIFO: Receive ID 1: Mask: 0x1FFFFFFF
-      Input: Receive FIFO: Receive ID 2: Mask: 0x1FFFFFFF
-      Input: Mailbox 0-3 Group: Mailbox 0-3 Group Mask: 0x1FFFFFFF
+      Input: Receive FIFO: Receive ID 1: Mask: 0
+      Input: Receive FIFO: Receive ID 2: Mask: 0
+      Input: Mailbox 0-3 Group: Mailbox 0-3 Group Mask: 0
       Input: Mailbox 4-7 Group: Mailbox 4-7 Group Mask: 0x1FFFFFFF
       Input: Mailbox 8-11 Group: Mailbox 8-11 Group Mask: 0x1FFFFFFF
       Input: Mailbox 12-15 Group: Mailbox 12-15 Group Mask: 0x1FFFFFFF

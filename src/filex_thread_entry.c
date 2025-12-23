@@ -12,27 +12,26 @@
 #include "common_utils.h"
 #include "filex_block_media_qspi_levelx_ep.h"
 #include "setup_qspi.h"
-#include "can_protocol.h"
+#include "can.h"
+#include "can_thread.h"
 
 /*******************************************************************************************************************//**
  * @addtogroup FileX_block_media_qspi_LevelX_ep
  * @{
  **********************************************************************************************************************/
 
-/* FileX Media Instance - made global for access by CAN thread */
-FX_MEDIA g_fx_media0;
-uint8_t g_fx_media0_media_memory[G_FX_MEDIA0_MEDIA_MEMORY_SIZE];
-/* File structure - made global for access by CAN thread */
-FX_FILE g_file;
+/* FileX Media Instance */
+static FX_MEDIA g_fx_media0;
+static uint8_t g_fx_media0_media_memory[G_FX_MEDIA0_MEDIA_MEMORY_SIZE];
+/* File structure */
+static FX_FILE g_file;
 /* Variable to store time*/
-static time_format_t g_set_time = {RESET_VALUE};
-/* Buffer to store read/write data - made global for access by CAN thread */
+time_format_t g_set_time = {RESET_VALUE};
+/* Buffer to store read/write data */
 uint8_t  g_write_data[WRITE_ITEM_SIZE];
 uint8_t  g_read_data[WRITE_ITEM_SIZE];
-
-/* Variables for sharing file data with CAN thread */
-uint8_t * g_p_file_buffer = NULL;
-ULONG g_file_size = 0;
+bool CAN_Flag = false;
+extern TX_THREAD can_thread;
 
 /* Function Declaration */
 static UINT filex_qspi_levelx_operation(void);
@@ -119,6 +118,7 @@ static UINT filex_qspi_levelx_operation(void)
     ULONG read_size = RESET_VALUE;
     /* File names */
     CHAR file_name1[MAX_FILE_NAME_SIZE] = "file_1.txt";
+    CHAR file_name2[MAX_FILE_NAME_SIZE] = "file_2.txt";
 
     /*Print Menu */
     app_rtt_print_data(RTT_OUTPUT_MESSAGE_APP_PRINT_MENU, RESET_VALUE, NULL);
@@ -267,7 +267,10 @@ static UINT filex_qspi_levelx_operation(void)
             PRINT_INFO_STR("File operation 1 is successful");
         }
         break;
-        case READ_AND_PRINT_FILE:
+        case FILE_2_WRITE_READ_COMPARE:
+            /* Create a text file, write pre-defined data in it and read data from it.
+             * Compare read data with write data and print result.
+             */
         {
             /* Open media for file operations */
             status = fx_media_open(&g_fx_media0,
@@ -282,12 +285,79 @@ static UINT filex_qspi_levelx_operation(void)
                 return status;
             }
 
-            /* Open the file for read */
-            status = fx_file_open(&g_fx_media0, &g_file, file_name1, FX_OPEN_FOR_READ);
+            /* Delete file2 if already present */
+            status = fx_file_delete(&g_fx_media0, file_name2);
+            if (status == FX_NOT_FOUND)
+            {
+                PRINT_INFO_STR("File2 not found");
+            }
+            else if (FX_SUCCESS != status)
+            {
+                PRINT_ERR_STR("File2 deletion failed");
+                return status;
+            }
+            else
+            {
+                PRINT_INFO_STR("File2 deleted successfully");
+            }
+
+            /* Create file2 */
+            status = fx_file_create(&g_fx_media0, file_name2);
+            if (FX_SUCCESS != status)
+            {
+                PRINT_ERR_STR("File2 creation failed");
+                return status;
+            }
+            else
+            {
+                PRINT_INFO_STR("File2 created successfully");
+            }
+
+            /* Open the file for write */
+            status = fx_file_open(&g_fx_media0, &g_file, file_name2, FX_OPEN_FOR_WRITE);
             if (FX_SUCCESS != status)
             {
                 PRINT_ERR_STR("File open failed");
-                fx_media_close(&g_fx_media0);
+                return status;
+            }
+
+            /* Fill write buffer with data */
+            UPDATE_BUFFER(g_write_data);
+
+            /* Write the fixed data to the opened file */
+            status = fx_file_write(&g_file, g_write_data, WRITE_ITEM_SIZE);
+            if (FX_SUCCESS != status)
+            {
+                PRINT_ERR_STR("File write failed");
+                return status;
+            }
+            else
+            {
+                PRINT_INFO_STR("Written data to File2 successfully");
+            }
+
+            /* Set date and Time */
+            status = fx_file_date_time_set(&g_fx_media0, file_name2, g_set_time.year, g_set_time.month, g_set_time.date,
+                                           g_set_time.hour, g_set_time.min, g_set_time.sec);
+            if (FX_SUCCESS != status)
+            {
+                PRINT_ERR_STR("Setting Date and Time failed");
+                return status;
+            }
+
+            /* Close the file */
+            status = fx_file_close(&g_file);
+            if (FX_SUCCESS != status)
+            {
+                APP_PRINT("File close failed");
+                return status;
+            }
+
+            /* Open the file for read */
+            status = fx_file_open(&g_fx_media0, &g_file, file_name2, FX_OPEN_FOR_READ);
+            if (FX_SUCCESS != status)
+            {
+                PRINT_ERR_STR("File open failed");
                 return status;
             }
 
@@ -299,23 +369,11 @@ static UINT filex_qspi_levelx_operation(void)
             if (FX_SUCCESS != status)
             {
                 PRINT_ERR_STR("File read failed");
-                fx_file_close(&g_file);
-                fx_media_close(&g_fx_media0);
                 return status;
             }
             else
             {
-                PRINT_INFO_STR("Read data from File1 successfully.");
-                APP_PRINT("\r\n--- Start of File Content (first 64 bytes) ---\r\n");
-                for(uint32_t i = 0; i < 64; i++)
-                {
-                    if(i % 16 == 0 && i > 0)
-                    {
-                        APP_PRINT("\r\n");
-                    }
-                    APP_PRINT("0x%02X ", g_read_data[i]);
-                }
-                APP_PRINT("\r\n--- End of File Content ---\r\n");
+                PRINT_INFO_STR("Read data from File2 successfully");
             }
 
             /* Close the file */
@@ -323,8 +381,19 @@ static UINT filex_qspi_levelx_operation(void)
             if (FX_SUCCESS != status)
             {
                 PRINT_ERR_STR("File close failed");
-                fx_media_close(&g_fx_media0);
                 return status;
+            }
+
+            /* Compare Write and Read data. */
+            if(RESET_VALUE != memcmp(g_write_data, g_read_data, WRITE_ITEM_SIZE))
+            {
+                status = FX_INVALID_CHECKSUM;
+                PRINT_ERR_STR("Write and Read data did not match");
+                return status;
+            }
+            else
+            {
+                PRINT_INFO_STR("Write and Read data matched");
             }
 
             /* Close the media */
@@ -335,21 +404,14 @@ static UINT filex_qspi_levelx_operation(void)
                 return status;
             }
 
-            PRINT_INFO_STR("File read operation is successful");
+            PRINT_INFO_STR("File operation 2 is successful");
         }
         break;
-        case SEND_FILE_VIA_CAN:
+        case CAN_TEST:
         {
-            /* Signal the CAN thread to start the file handling and transfer process */
-            status = tx_event_flags_set(&g_can_event_flags, CAN_EVENT_FLAG_START_TRANSFER, TX_OR);
-            if (TX_SUCCESS != status)
-            {
-                 PRINT_ERR_STR("Failed to set CAN start transfer event flag.");
-            }
-            else
-            {
-                PRINT_INFO_STR("Signaled CAN Thread to start transfer.");
-            }
+            PRINT_INFO_STR("Successfully entered CAN_TEST");
+            CAN_Flag = true;
+            tx_thread_resume(&can_thread);
         }
         break;
         default:

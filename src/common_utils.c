@@ -74,26 +74,3 @@ void rtt_thread_service_cleanup(void)
 }
 
 
-uint32_t crc32_calculate(uint8_t *p_data, uint32_t length)
-{
-    uint32_t crc = 0xFFFFFFFF;
-    const uint32_t polynomial = 0xEDB88320;
-
-    for (uint32_t i = 0; i < length; i++)
-    {
-        crc ^= p_data[i];
-        for (uint8_t j = 0; j < 8; j++)
-        {
-            if (crc & 1)
-            {
-                crc = (crc >> 1) ^ polynomial;
-            }
-            else
-            {
-                crc = (crc >> 1);
-            }
-        }
-    }
-
-    return ~crc;
-}

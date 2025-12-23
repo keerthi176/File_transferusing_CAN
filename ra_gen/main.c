@@ -4,7 +4,7 @@
 
 extern void filex_thread_create(void);
 extern void rtt_thread_create(void);
-extern void can_app_thread_create(void);
+extern void can_thread_create(void);
 
 uint32_t g_fsp_common_thread_count;
 bool g_fsp_common_initialized;
@@ -62,7 +62,7 @@ void tx_application_define(void *first_unused_memory)
 
     filex_thread_create ();
     rtt_thread_create ();
-    can_app_thread_create ();
+    can_thread_create ();
 
 #ifdef TX_USER_ENABLE_TRACE
 					TX_USER_ENABLE_TRACE;

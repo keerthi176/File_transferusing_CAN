@@ -1,13 +1,13 @@
 /* generated thread header file - do not edit */
-#ifndef CAN_APP_THREAD_H_
-#define CAN_APP_THREAD_H_
+#ifndef CAN_THREAD_H_
+#define CAN_THREAD_H_
 #include "bsp_api.h"
 #include "tx_api.h"
 #include "hal_data.h"
 #ifdef __cplusplus
-                extern "C" void can_app_thread_entry(void);
+                extern "C" void can_thread_entry(void);
                 #else
-extern void can_app_thread_entry(void);
+extern void can_thread_entry(void);
 #endif
 #include "r_can.h"
 #include "r_can_api.h"
@@ -35,4 +35,4 @@ void can_callback(can_callback_args_t *p_args);
 #endif
 #define CAN_NO_OF_MAILBOXES_g_can0 (4)
 FSP_FOOTER
-#endif /* CAN_APP_THREAD_H_ */
+#endif /* CAN_THREAD_H_ */
