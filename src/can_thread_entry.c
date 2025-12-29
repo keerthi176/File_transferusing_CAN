@@ -11,7 +11,7 @@ extern bool CAN_Flag;
 extern TX_BYTE_POOL g_can_message_pool;
 
 /* Firmware Receiver Defines and State */
-#define RECONSTRUCTION_BUFFER_SIZE (2048)
+#define RECONSTRUCTION_BUFFER_SIZE (186360)
 
 typedef enum e_receiver_state
 {
@@ -448,7 +448,29 @@ void process_message(can_node_t *p_node)
                 {
                     APP_PRINT("\r\n[RX] EOT received. Transfer successful.\r\n");
                     APP_PRINT("[RX] Reconstructed %lu bytes.\r\n", g_received_size);
-                    g_receiver_state = STATE_FINISHED;
+
+                    /* Print the reconstructed content and checksum for verification */
+                    APP_PRINT("\r\n[RX] Reconstructed File Content (%lu bytes):\r\n", g_received_size);
+                    uint32_t checksum = 0;
+                    char line_buffer[128]; // Buffer for one line of hex output
+                    int line_char_count = 0;
+
+                    for (uint32_t i = 0; i < g_received_size; i++)
+                    {
+                        checksum += g_reconstruction_buffer[i];
+                        // Add the hex value to the line buffer
+                        line_char_count += snprintf(&line_buffer[line_char_count], sizeof(line_buffer) - (size_t)line_char_count, "0x%02X ", g_reconstruction_buffer[i]);
+
+                        // If we've reached 16 bytes or this is the last byte, print the line.
+                        if (((i + 1) % 16 == 0) || ((i + 1) == g_received_size))
+                        {
+                            APP_PRINT("%s\r\n", line_buffer);
+                            line_char_count = 0; // Reset for the next line
+                            tx_thread_sleep(5); // Give RTT a moment to flush
+                        }
+                    }
+                    APP_PRINT("[RX] Checksum (simple sum): 0x%lX\r\n", checksum);
+                    g_receiver_state = STATE_IDLE; // Reset for next transfer
                 }
                 else
                 {
@@ -461,8 +483,7 @@ void process_message(can_node_t *p_node)
 
         case STATE_FINISHED:
         {
-            // The file is successfully reconstructed in g_reconstruction_buffer.
-            // For now, we will just reset to IDLE to be ready for another transfer.
+            // This state is no longer used for processing, but we'll keep it to reset to IDLE as a fallback.
             g_receiver_state = STATE_IDLE;
             break;
         }
