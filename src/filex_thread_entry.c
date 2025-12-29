@@ -14,6 +14,7 @@
 #include "setup_qspi.h"
 #include "can.h"
 #include "can_thread.h"
+#include "ymodem_port.h"
 
 /*******************************************************************************************************************//**
  * @addtogroup FileX_block_media_qspi_LevelX_ep
@@ -21,8 +22,8 @@
  **********************************************************************************************************************/
 
 /* FileX Media Instance */
-static FX_MEDIA g_fx_media0;
-static uint8_t g_fx_media0_media_memory[G_FX_MEDIA0_MEDIA_MEMORY_SIZE];
+FX_MEDIA g_fx_media0;
+uint8_t g_fx_media0_media_memory[G_FX_MEDIA0_MEDIA_MEMORY_SIZE];
 /* File structure */
 static FX_FILE g_file;
 /* Variable to store time*/
@@ -33,11 +34,13 @@ uint8_t  g_read_data[WRITE_ITEM_SIZE];
 bool CAN_Flag = false;
 extern TX_THREAD can_thread;
 
+/* Buffer for the last received filename */
+static char g_last_received_filename[MAX_FILE_NAME_SIZE] = "";
+
 /* Memory pool for passing messages to the CAN thread */
 #define CAN_MESSAGE_POOL_SIZE (16 * (sizeof(can_msg_t) + sizeof(void *)))
 TX_BYTE_POOL g_can_message_pool;
 static uint8_t g_can_message_pool_buffer[CAN_MESSAGE_POOL_SIZE];
-
 
 /* Function Declaration */
 static UINT filex_qspi_levelx_operation(void);
@@ -46,6 +49,7 @@ static void get_current_date_time(time_format_t * time);
 static void assign_month_value(time_format_t * time, char * read_buffer);
 static void deinit_media(void);
 static UINT start_file_transfer_to_queue(CHAR *p_filename);
+extern UINT send_firmware_over_can(void);
 
 /* FileX_Thread entry function */
 void filex_thread_entry(void)
@@ -433,7 +437,6 @@ static UINT filex_qspi_levelx_operation(void)
         {
             PRINT_INFO_STR("Successfully entered file 1 read");
 
-            /* Open media for file operations */
             status = fx_media_open(&g_fx_media0,
                                    "&g_fx_media0",
                                    RM_FILEX_LEVELX_NOR_DeviceDriver,
@@ -446,7 +449,6 @@ static UINT filex_qspi_levelx_operation(void)
                 return status;
             }
 
-            /* Open the file for read */
             status = fx_file_open(&g_fx_media0, &g_file, file_name1, FX_OPEN_FOR_READ);
             if (FX_SUCCESS != status)
             {
@@ -455,10 +457,8 @@ static UINT filex_qspi_levelx_operation(void)
                 return status;
             }
 
-            /* Fill read buffer with zero */
             memset(&g_read_data, RESET_VALUE, WRITE_ITEM_SIZE);
 
-            /* Read the file, leaving room for a null terminator. */
             status = fx_file_read(&g_file, g_read_data, WRITE_ITEM_SIZE - 1, &read_size);
             if ((FX_SUCCESS != status) && (FX_END_OF_FILE != status))
             {
@@ -468,7 +468,6 @@ static UINT filex_qspi_levelx_operation(void)
                 return status;
             }
 
-            /* Data is binary, not a string. Print a sample in hex format. */
             PRINT_INFO_STR("Read data from File1 successfully.");
             APP_PRINT("Read %lu bytes. Displaying first 32 bytes:\r\n", read_size);
             for(uint32_t i = 0; (i < 32) && (i < read_size); i++)
@@ -477,7 +476,6 @@ static UINT filex_qspi_levelx_operation(void)
             }
             APP_PRINT("\r\n");
 
-            /* Close the file and media from the read operation before starting the CAN send */
             status = fx_file_close(&g_file);
             if (FX_SUCCESS != status)
             {
@@ -494,16 +492,14 @@ static UINT filex_qspi_levelx_operation(void)
             }
             PRINT_INFO_STR("File read operation successful.");
 
-            /* Resume the CAN thread so it is ready to receive messages */
             PRINT_INFO_STR("Resuming CAN thread...");
             status = tx_thread_resume(&can_thread);
-            if ((TX_SUCCESS != status) && (TX_RESUME_ERROR != status))
+if ((TX_SUCCESS != status) && (TX_RESUME_ERROR != status))
             {
                 PRINT_ERR_STR("Failed to resume CAN thread.");
                 return status;
             }
 
-            /* Start the file transfer by sending messages to the CAN thread */
             PRINT_INFO_STR("Queueing file for CAN transmission...");
             status = start_file_transfer_to_queue(file_name1);
             if (TX_SUCCESS != status)
@@ -514,6 +510,36 @@ static UINT filex_qspi_levelx_operation(void)
             {
                 PRINT_INFO_STR("File transfer to queue successful.");
             }
+        }
+        break;
+        case SEND_FIRMWARE_OVER_CAN:
+        {
+            PRINT_INFO_STR("Resuming CAN thread...");
+            status = tx_thread_resume(&can_thread);
+            if ((TX_SUCCESS != status) && (TX_RESUME_ERROR != status))
+            {
+                PRINT_ERR_STR("Failed to resume CAN thread.");
+                return status;
+            }
+
+            /* Add a small delay to allow the CAN thread to run and start processing the queue */
+            tx_thread_sleep(2);
+
+            PRINT_INFO_STR("Initiating firmware transfer over CAN...");
+            status = send_firmware_over_can();
+            if (TX_SUCCESS != status)
+            {
+                PRINT_ERR_STR("Firmware transfer over CAN failed.");
+            }
+            else
+            {
+                PRINT_INFO_STR("Firmware transfer over CAN successful.");
+            }
+        }
+        break;
+        case UART_ECHO_TEST:
+        {
+            uart_echo_test();
         }
         break;
         default:
@@ -744,7 +770,7 @@ static UINT start_file_transfer_to_queue(CHAR *p_filename)
                            (void *) &g_rm_filex_levelx_nor_instance, g_fx_media0_media_memory, G_FX_MEDIA0_MEDIA_MEMORY_SIZE);
     if(FX_SUCCESS != status)
     {
-        PRINT_ERR_STR("[PRODUCER] Media open failed\r\n");
+        PRINT_ERR_STR("Media open failed\r\n");
         return status;
     }
 
@@ -752,19 +778,18 @@ static UINT start_file_transfer_to_queue(CHAR *p_filename)
     status = fx_file_open(&g_fx_media0, &my_file, p_filename, FX_OPEN_FOR_READ);
     if (FX_SUCCESS != status)
     {
-        PRINT_ERR_STR("[PRODUCER] File open failed\r\n");
+        PRINT_ERR_STR("File open failed\r\n");
         fx_media_close(&g_fx_media0);
         return status;
     }
 
     file_size = my_file.fx_file_current_file_size;
 
-    /* --- 1. Send SOT Message --- */
-    PRINT_INFO_STR("[PRODUCER] Queueing SOT message...\r\n");
+    PRINT_INFO_STR("Queueing SOT message...\r\n");
     status = tx_byte_allocate(&g_can_message_pool, (VOID **) &p_can_msg, sizeof(can_msg_t), TX_WAIT_FOREVER);
     if (TX_SUCCESS != status)
     {
-        PRINT_ERR_STR("[PRODUCER] Failed to allocate memory for SOT message\r\n");
+        PRINT_ERR_STR("Failed to allocate memory for SOT message\r\n");
     }
     else
     {
@@ -774,39 +799,36 @@ static UINT start_file_transfer_to_queue(CHAR *p_filename)
         status = tx_queue_send(&g_can_tx_queue, &p_can_msg, TX_WAIT_FOREVER);
         if (TX_SUCCESS != status)
         {
-            PRINT_ERR_STR("[PRODUCER] Failed to send SOT message to queue\r\n");
+            PRINT_ERR_STR("Failed to send SOT message to queue\r\n");
             tx_byte_release(p_can_msg);
         }
     }
 
-    if (TX_SUCCESS != status) // Abort if SOT failed
+    if (TX_SUCCESS != status)
     {
         fx_file_close(&my_file);
         fx_media_close(&g_fx_media0);
         return status;
     }
 
-
-    /* --- 2. Send DATA Messages --- */
-    PRINT_INFO_STR("[PRODUCER] Queueing DATA messages...\r\n");
-    ULONG data_packets_queued = 0; // Counter for DATA messages
+    PRINT_INFO_STR("Queueing DATA messages...\r\n");
+    ULONG data_packets_queued = 0;
     do
     {
-        // Allocate memory for the DATA message first
         status = tx_byte_allocate(&g_can_message_pool, (VOID **) &p_can_msg, sizeof(can_msg_t), TX_WAIT_FOREVER);
         if (TX_SUCCESS != status)
         {
-            PRINT_ERR_STR("[PRODUCER] Failed to allocate memory for DATA message\r\n");
-            break; // Exit loop
+            PRINT_ERR_STR("Failed to allocate memory for DATA message\r\n");
+            break;
         }
 
         read_status = fx_file_read(&my_file, p_can_msg->payload.data_packet.data, CAN_DATA_MAX_SIZE, &actual_bytes_read);
         if ((FX_SUCCESS != read_status) && (FX_END_OF_FILE != read_status))
         {
-            PRINT_ERR_STR("[PRODUCER] File read failed during transfer\r\n");
-            tx_byte_release(p_can_msg); // Release allocated memory
+            PRINT_ERR_STR("File read failed during transfer\r\n");
+            tx_byte_release(p_can_msg);
             status = read_status;
-            break; // Exit loop
+            break;
         }
 
         if (actual_bytes_read > 0)
@@ -818,30 +840,28 @@ static UINT start_file_transfer_to_queue(CHAR *p_filename)
             status = tx_queue_send(&g_can_tx_queue, &p_can_msg, TX_WAIT_FOREVER);
             if (TX_SUCCESS != status)
             {
-                PRINT_ERR_STR("[PRODUCER] Failed to send DATA message to queue\r\n");
-                tx_byte_release(p_can_msg); // Release memory
-                break; // Exit loop
+                PRINT_ERR_STR("Failed to send DATA message to queue\r\n");
+                tx_byte_release(p_can_msg);
+                break;
             }
             sequence_no++;
-            data_packets_queued++; // Increment counter
+            data_packets_queued++;
         }
         else
         {
-             tx_byte_release(p_can_msg); // No bytes read, release memory
+             tx_byte_release(p_can_msg);
         }
 
     } while (FX_END_OF_FILE != read_status);
-    APP_PRINT("[PRODUCER] Queued %lu DATA packets.\r\n", data_packets_queued); // New print after loop
+    APP_PRINT("Queued %lu DATA packets.\r\n", data_packets_queued);
 
-
-    /* --- 3. Send EOT Message --- */
     if (FX_SUCCESS == status || FX_END_OF_FILE == read_status)
     {
-        PRINT_INFO_STR("[PRODUCER] Queueing EOT message...\r\n");
+        PRINT_INFO_STR("Queueing EOT message...\r\n");
         status = tx_byte_allocate(&g_can_message_pool, (VOID **) &p_can_msg, sizeof(can_msg_t), TX_WAIT_FOREVER);
         if (TX_SUCCESS != status)
         {
-            PRINT_ERR_STR("[PRODUCER] Failed to allocate memory for EOT message\r\n");
+            PRINT_ERR_STR("Failed to allocate memory for EOT message\r\n");
         }
         else
         {
@@ -850,13 +870,12 @@ static UINT start_file_transfer_to_queue(CHAR *p_filename)
             status = tx_queue_send(&g_can_tx_queue, &p_can_msg, TX_WAIT_FOREVER);
             if (TX_SUCCESS != status)
             {
-                PRINT_ERR_STR("[PRODUCER] Failed to send EOT message to queue\r\n");
+                PRINT_ERR_STR("Failed to send EOT message to queue\r\n");
                 tx_byte_release(p_can_msg);
             }
         }
     }
 
-    /* --- 4. Cleanup --- */
     fx_file_close(&my_file);
     fx_media_close(&g_fx_media0);
 

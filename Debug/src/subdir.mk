@@ -9,7 +9,9 @@ C_SRCS += \
 ../src/filex_thread_entry.c \
 ../src/hal_entry.c \
 ../src/rtt_thread_entry.c \
-../src/setup_qspi.c 
+../src/setup_qspi.c \
+../src/ymodem.c \
+../src/ymodem_port.c 
 
 C_DEPS += \
 ./src/can_thread_entry.d \
@@ -17,7 +19,9 @@ C_DEPS += \
 ./src/filex_thread_entry.d \
 ./src/hal_entry.d \
 ./src/rtt_thread_entry.d \
-./src/setup_qspi.d 
+./src/setup_qspi.d \
+./src/ymodem.d \
+./src/ymodem_port.d 
 
 OBJS += \
 ./src/can_thread_entry.o \
@@ -25,7 +29,9 @@ OBJS += \
 ./src/filex_thread_entry.o \
 ./src/hal_entry.o \
 ./src/rtt_thread_entry.o \
-./src/setup_qspi.o 
+./src/setup_qspi.o \
+./src/ymodem.o \
+./src/ymodem_port.o 
 
 SREC += \
 FileX_block_media_qspi_LevelX_ek_ra6m3_ep.srec 

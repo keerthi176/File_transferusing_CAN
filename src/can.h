@@ -95,7 +95,6 @@ typedef struct s_can_msg
     } payload;
 } can_msg_t;
 
-/* Queue for sending data from other threads to the can_thread for transmission */
 extern TX_QUEUE g_can_tx_queue;
 
 

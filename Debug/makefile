@@ -19,6 +19,7 @@ RM := rm -rf
 -include ra/fsp/src/rm_threadx_port/subdir.mk
 -include ra/fsp/src/rm_levelx_nor_spi/subdir.mk
 -include ra/fsp/src/rm_filex_levelx_nor/subdir.mk
+-include ra/fsp/src/r_sci_uart/subdir.mk
 -include ra/fsp/src/r_qspi/subdir.mk
 -include ra/fsp/src/r_ioport/subdir.mk
 -include ra/fsp/src/r_can/subdir.mk

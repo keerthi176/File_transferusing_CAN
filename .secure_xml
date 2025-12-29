@@ -89,6 +89,8 @@
       <configSetting altId="qspi0.qio3.p310" configurationId="qspi0.qio3" isUsedByDriver="true" peripheral="QSPI0"/>
       <configSetting altId="qspi0.qspclk.p305" configurationId="qspi0.qspclk" isUsedByDriver="true" peripheral="QSPI0"/>
       <configSetting altId="qspi0.qssl.p306" configurationId="qspi0.qssl" isUsedByDriver="true" peripheral="QSPI0"/>
+      <configSetting altId="sci0.rxd.p410" configurationId="sci0.rxd" isUsedByDriver="true" peripheral="SCI0"/>
+      <configSetting altId="sci0.txd.p411" configurationId="sci0.txd" isUsedByDriver="true" peripheral="SCI0"/>
       <configSetting altId="trace0.tclk.p214" configurationId="trace0.tclk" isUsedByDriver="true" peripheral="TRACE0"/>
       <configSetting altId="trace0.tdata0.p211" configurationId="trace0.tdata0" isUsedByDriver="true" peripheral="TRACE0"/>
       <configSetting altId="trace0.tdata1.p210" configurationId="trace0.tdata1" isUsedByDriver="true" peripheral="TRACE0"/>

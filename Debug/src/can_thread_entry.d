@@ -76,6 +76,10 @@ src/can_thread_entry.o: ../src/can_thread_entry.c \
  D:/ModularmProject/can_ex_repo/FileX_block_media_qspi_LevelX/FileX_block_media_qspi_LevelX_ek_ra6m3_ep/e2studio/ra/fsp/inc/api/r_ioport_api.h \
  D:/ModularmProject/can_ex_repo/FileX_block_media_qspi_LevelX/FileX_block_media_qspi_LevelX_ek_ra6m3_ep/e2studio/ra_cfg/fsp_cfg/r_ioport_cfg.h \
  D:/ModularmProject/can_ex_repo/FileX_block_media_qspi_LevelX/FileX_block_media_qspi_LevelX_ek_ra6m3_ep/e2studio/ra_cfg/fsp_cfg/bsp/bsp_pin_cfg.h \
+ D:/ModularmProject/can_ex_repo/FileX_block_media_qspi_LevelX/FileX_block_media_qspi_LevelX_ek_ra6m3_ep/e2studio/ra/fsp/inc/instances/r_sci_uart.h \
+ D:/ModularmProject/can_ex_repo/FileX_block_media_qspi_LevelX/FileX_block_media_qspi_LevelX_ek_ra6m3_ep/e2studio/ra/fsp/inc/api/r_uart_api.h \
+ D:/ModularmProject/can_ex_repo/FileX_block_media_qspi_LevelX/FileX_block_media_qspi_LevelX_ek_ra6m3_ep/e2studio/ra/fsp/inc/api/r_transfer_api.h \
+ D:/ModularmProject/can_ex_repo/FileX_block_media_qspi_LevelX/FileX_block_media_qspi_LevelX_ek_ra6m3_ep/e2studio/ra_cfg/fsp_cfg/r_sci_uart_cfg.h \
  D:/ModularmProject/can_ex_repo/FileX_block_media_qspi_LevelX/FileX_block_media_qspi_LevelX_ek_ra6m3_ep/e2studio/ra/fsp/inc/instances/r_can.h \
  D:/ModularmProject/can_ex_repo/FileX_block_media_qspi_LevelX/FileX_block_media_qspi_LevelX_ek_ra6m3_ep/e2studio/ra_cfg/fsp_cfg/r_can_cfg.h \
  D:/ModularmProject/can_ex_repo/FileX_block_media_qspi_LevelX/FileX_block_media_qspi_LevelX_ek_ra6m3_ep/e2studio/ra/fsp/inc/api/r_can_api.h \
@@ -84,7 +88,8 @@ src/can_thread_entry.o: ../src/can_thread_entry.c \
  D:/ModularmProject/can_ex_repo/FileX_block_media_qspi_LevelX/FileX_block_media_qspi_LevelX_ek_ra6m3_ep/e2studio/ra_gen/filex_thread.h \
  ../src/common_utils.h \
  D:/ModularmProject/can_ex_repo/FileX_block_media_qspi_LevelX/FileX_block_media_qspi_LevelX_ek_ra6m3_ep/e2studio/ra_gen/hal_data.h \
- ../src/SEGGER_RTT/SEGGER_RTT.h ../src/SEGGER_RTT/SEGGER_RTT_Conf.h
+ ../src/SEGGER_RTT/SEGGER_RTT.h ../src/SEGGER_RTT/SEGGER_RTT_Conf.h \
+ ../src/firmware_image.h
 D:/ModularmProject/can_ex_repo/FileX_block_media_qspi_LevelX/FileX_block_media_qspi_LevelX_ek_ra6m3_ep/e2studio/ra_gen/can_thread.h:
 D:/ModularmProject/can_ex_repo/FileX_block_media_qspi_LevelX/FileX_block_media_qspi_LevelX_ek_ra6m3_ep/e2studio/ra/fsp/inc/api/bsp_api.h:
 D:/ModularmProject/can_ex_repo/FileX_block_media_qspi_LevelX/FileX_block_media_qspi_LevelX_ek_ra6m3_ep/e2studio/ra/fsp/inc/api/fsp_common_api.h:
@@ -162,6 +167,10 @@ D:/ModularmProject/can_ex_repo/FileX_block_media_qspi_LevelX/FileX_block_media_q
 D:/ModularmProject/can_ex_repo/FileX_block_media_qspi_LevelX/FileX_block_media_qspi_LevelX_ek_ra6m3_ep/e2studio/ra/fsp/inc/api/r_ioport_api.h:
 D:/ModularmProject/can_ex_repo/FileX_block_media_qspi_LevelX/FileX_block_media_qspi_LevelX_ek_ra6m3_ep/e2studio/ra_cfg/fsp_cfg/r_ioport_cfg.h:
 D:/ModularmProject/can_ex_repo/FileX_block_media_qspi_LevelX/FileX_block_media_qspi_LevelX_ek_ra6m3_ep/e2studio/ra_cfg/fsp_cfg/bsp/bsp_pin_cfg.h:
+D:/ModularmProject/can_ex_repo/FileX_block_media_qspi_LevelX/FileX_block_media_qspi_LevelX_ek_ra6m3_ep/e2studio/ra/fsp/inc/instances/r_sci_uart.h:
+D:/ModularmProject/can_ex_repo/FileX_block_media_qspi_LevelX/FileX_block_media_qspi_LevelX_ek_ra6m3_ep/e2studio/ra/fsp/inc/api/r_uart_api.h:
+D:/ModularmProject/can_ex_repo/FileX_block_media_qspi_LevelX/FileX_block_media_qspi_LevelX_ek_ra6m3_ep/e2studio/ra/fsp/inc/api/r_transfer_api.h:
+D:/ModularmProject/can_ex_repo/FileX_block_media_qspi_LevelX/FileX_block_media_qspi_LevelX_ek_ra6m3_ep/e2studio/ra_cfg/fsp_cfg/r_sci_uart_cfg.h:
 D:/ModularmProject/can_ex_repo/FileX_block_media_qspi_LevelX/FileX_block_media_qspi_LevelX_ek_ra6m3_ep/e2studio/ra/fsp/inc/instances/r_can.h:
 D:/ModularmProject/can_ex_repo/FileX_block_media_qspi_LevelX/FileX_block_media_qspi_LevelX_ek_ra6m3_ep/e2studio/ra_cfg/fsp_cfg/r_can_cfg.h:
 D:/ModularmProject/can_ex_repo/FileX_block_media_qspi_LevelX/FileX_block_media_qspi_LevelX_ek_ra6m3_ep/e2studio/ra/fsp/inc/api/r_can_api.h:
@@ -172,3 +181,4 @@ D:/ModularmProject/can_ex_repo/FileX_block_media_qspi_LevelX/FileX_block_media_q
 D:/ModularmProject/can_ex_repo/FileX_block_media_qspi_LevelX/FileX_block_media_qspi_LevelX_ek_ra6m3_ep/e2studio/ra_gen/hal_data.h:
 ../src/SEGGER_RTT/SEGGER_RTT.h:
 ../src/SEGGER_RTT/SEGGER_RTT_Conf.h:
+../src/firmware_image.h:

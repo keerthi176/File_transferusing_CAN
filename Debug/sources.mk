@@ -60,6 +60,7 @@ ra/fsp/src/bsp/mcu/ra6m3 \
 ra/fsp/src/r_can \
 ra/fsp/src/r_ioport \
 ra/fsp/src/r_qspi \
+ra/fsp/src/r_sci_uart \
 ra/fsp/src/rm_filex_levelx_nor \
 ra/fsp/src/rm_levelx_nor_spi \
 ra/fsp/src/rm_threadx_port \

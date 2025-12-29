@@ -191,8 +191,8 @@ FSP Configuration
       P407 44 - - - - Disabled - - "ADC0: ADTRG; AGT0: AGTIO; CTSU0: TS03; ETHERC0: EXOUT; ETHERC0: EXOUT; IIC0: SDA; RTC0: RTCOUT; SCI4: CTS_RTS_SS; SPI1: SSL3; USBFS0: VBUS" - None - - 
       P408 43 - - - - Disabled - - "CTSU0: TS04; ETHERC0: CRS; ETHERC0: CRS_DV; GPT10: GTIOCB; IIC0: SCL; IRQ0: IRQ07; OPS0: GTOWLO; PDC0: PIXCLK; SCI3: RXD_MISO; SCI3: SCL; USBFS0: ID" - None - - 
       P409 42 - - - - Disabled - - "CTSU0: TS05; ETHERC0: RX_CLK; ETHERC0: RX_ER; GPT10: GTIOCA; IRQ0: IRQ06; OPS0: GTOWUP; PDC0: HSYNC; SCI3: SDA; SCI3: TXD_MOSI; USBFS0: EXICEN" - None - - 
-      P410 41 - - - - Disabled - - "AGT1: AGTOB; CTSU0: TS06; ETHERC0: ERXD0; ETHERC0: RXD1; GPT9: GTIOCB; IRQ0: IRQ05; OPS0: GTOVLO; PDC0: PIXD0; SCI0: RXD_MISO; SCI0: SCL; SCI3: SCK; SDHI0: DAT1; SPI0: MISO" - None - - 
-      P411 40 - - - - Disabled - - "AGT1: AGTOA; CTSU0: TS07; ETHERC0: ERXD1; ETHERC0: RXD0; GPT9: GTIOCA; IRQ0: IRQ04; OPS0: GTOVUP; PDC0: PIXD1; SCI0: SDA; SCI0: TXD_MOSI; SCI3: CTS_RTS_SS; SDHI0: DAT0; SPI0: MOSI" - None - - 
+      P410 41 SCI0_RXD_MISO - Low None "Peripheral mode" CMOS None "AGT1: AGTOB; CTSU0: TS06; ETHERC0: ERXD0; ETHERC0: RXD1; GPT9: GTIOCB; IRQ0: IRQ05; OPS0: GTOVLO; PDC0: PIXD0; SCI0: RXD_MISO; SCI0: SCL; SCI3: SCK; SDHI0: DAT1; SPI0: MISO" - IO - - 
+      P411 40 SCI0_TXD_MOSI - Low None "Peripheral mode" CMOS None "AGT1: AGTOA; CTSU0: TS07; ETHERC0: ERXD1; ETHERC0: RXD0; GPT9: GTIOCA; IRQ0: IRQ04; OPS0: GTOVUP; PDC0: PIXD1; SCI0: SDA; SCI0: TXD_MOSI; SCI3: CTS_RTS_SS; SDHI0: DAT0; SPI0: MOSI" - IO - - 
       P412 39 - - - - Disabled - - "AGT1: AGTEE; CTSU0: TS08; ETHERC0: ETXD0; ETHERC0: REF50CK; OPS0: GTOULO; PDC0: PIXD2; SCI0: SCK; SDHI0: CMD; SPI0: RSPCK" - None - - 
       P413 38 GPIO - Low - "Output mode (Initial Low)" CMOS None "CTSU0: TS09; ETHERC0: ETXD1; ETHERC0: TXD0; OPS0: GTOUUP; PDC0: PIXD3; SCI0: CTS_RTS_SS; SDHI0: CLK; SPI0: SSL0" - IO - - 
       P414 37 - - - - Disabled - - "CTSU0: TS10; ETHERC0: RX_ER; ETHERC0: TXD1; GPT0: GTIOCB; IRQ0: IRQ09; PDC0: PIXD4; SDHI0: WP; SPI0: SSL1" - None - - 
@@ -368,8 +368,8 @@ FSP Configuration
       P407 44 - - - - Disabled - - "ADC0: ADTRG; AGT0: AGTIO; CTSU0: TS03; ETHERC0: EXOUT; ETHERC0: EXOUT; IIC0: SDA; RTC0: RTCOUT; SCI4: CTS_RTS_SS; SPI1: SSL3; USBFS0: VBUS" - None - - 
       P408 43 - - - - Disabled - - "CTSU0: TS04; ETHERC0: CRS; ETHERC0: CRS_DV; GPT10: GTIOCB; IIC0: SCL; IRQ0: IRQ07; OPS0: GTOWLO; PDC0: PIXCLK; SCI3: RXD_MISO; SCI3: SCL; USBFS0: ID" - None - - 
       P409 42 - - - - Disabled - - "CTSU0: TS05; ETHERC0: RX_CLK; ETHERC0: RX_ER; GPT10: GTIOCA; IRQ0: IRQ06; OPS0: GTOWUP; PDC0: HSYNC; SCI3: SDA; SCI3: TXD_MOSI; USBFS0: EXICEN" - None - - 
-      P410 41 - - - - Disabled - - "AGT1: AGTOB; CTSU0: TS06; ETHERC0: ERXD0; ETHERC0: RXD1; GPT9: GTIOCB; IRQ0: IRQ05; OPS0: GTOVLO; PDC0: PIXD0; SCI0: RXD_MISO; SCI0: SCL; SCI3: SCK; SDHI0: DAT1; SPI0: MISO" - None - - 
-      P411 40 - - - - Disabled - - "AGT1: AGTOA; CTSU0: TS07; ETHERC0: ERXD1; ETHERC0: RXD0; GPT9: GTIOCA; IRQ0: IRQ04; OPS0: GTOVUP; PDC0: PIXD1; SCI0: SDA; SCI0: TXD_MOSI; SCI3: CTS_RTS_SS; SDHI0: DAT0; SPI0: MOSI" - None - - 
+      P410 41 - - Low None Disabled CMOS None "AGT1: AGTOB; CTSU0: TS06; ETHERC0: ERXD0; ETHERC0: RXD1; GPT9: GTIOCB; IRQ0: IRQ05; OPS0: GTOVLO; PDC0: PIXD0; SCI0: RXD_MISO; SCI0: SCL; SCI3: SCK; SDHI0: DAT1; SPI0: MISO" - IO - - 
+      P411 40 - - Low None Disabled CMOS None "AGT1: AGTOA; CTSU0: TS07; ETHERC0: ERXD1; ETHERC0: RXD0; GPT9: GTIOCA; IRQ0: IRQ04; OPS0: GTOVUP; PDC0: PIXD1; SCI0: SDA; SCI0: TXD_MOSI; SCI3: CTS_RTS_SS; SDHI0: DAT0; SPI0: MOSI" - IO - - 
       P412 39 - - - - Disabled - - "AGT1: AGTEE; CTSU0: TS08; ETHERC0: ETXD0; ETHERC0: REF50CK; OPS0: GTOULO; PDC0: PIXD2; SCI0: SCK; SDHI0: CMD; SPI0: RSPCK" - None - - 
       P413 38 - - Low - Disabled CMOS None "CTSU0: TS09; ETHERC0: ETXD1; ETHERC0: TXD0; OPS0: GTOUUP; PDC0: PIXD3; SCI0: CTS_RTS_SS; SDHI0: CLK; SPI0: SSL0" - IO - - 
       P414 37 - - - - Disabled - - "CTSU0: TS10; ETHERC0: RX_ER; ETHERC0: TXD1; GPT0: GTIOCB; IRQ0: IRQ09; PDC0: PIXD4; SDHI0: WP; SPI0: SSL1" - None - - 
@@ -544,6 +544,14 @@ FSP Configuration
     Parameter Checking: Default (BSP)
     FIFO Support: Enabled
     
+  Module "UART (r_sci_uart)"
+    Parameter Checking: Default (BSP)
+    FIFO Support: Disable
+    DTC Support: Disable
+    Flow Control Support: Disable
+    RS-485 Support: Disable
+    IrDA Support: Disabled
+    
   Azure RTOS ThreadX
     General: Custom tx_user.h: 
     General: Error Checking: Enabled
@@ -590,6 +598,35 @@ FSP Configuration
       Pin Configuration Name: g_bsp_pin_cfg
       
     Instance "Azure RTOS ThreadX Port (rm_threadx_port)"
+    Instance "g_uart0 UART (r_sci_uart)"
+      General: Name: g_uart0
+      General: Channel: 0
+      General: Data Bits: 8bits
+      General: Parity: None
+      General: Stop Bits: 1bit
+      Baud: Baud Rate: 115200
+      Baud: Baud Rate Modulation: Disabled
+      Baud: Max Error (%): 5
+      Flow Control: CTS/RTS Selection: Hardware RTS
+      Flow Control: Software RTS Port: Disabled
+      Flow Control: Software RTS Pin: Disabled
+      Extra: Clock Source: Internal Clock
+      Extra: Start bit detection: Falling Edge
+      Extra: Noise Filter: Disable
+      Extra: Receive FIFO Trigger Level: Max
+      Extra: IrDA: Enable: Disabled
+      Extra: IrDA: RXD Polarity Switching: Normal
+      Extra: IrDA: TXD Polarity Switching: Normal
+      Extra: RS-485: DE Pin: Disable
+      Extra: RS-485: DE Pin Polarity: Active High
+      Extra: RS-485: DE Port Number: Disabled
+      Extra: RS-485: DE Pin Number: Disabled
+      Interrupts: Callback: NULL
+      Interrupts: Receive Interrupt Priority: Priority 12
+      Interrupts: Transmit Data Empty Interrupt Priority: Priority 12
+      Interrupts: Transmit End Interrupt Priority: Priority 12
+      Interrupts: Error Interrupt Priority: Priority 12
+      
   Thread "FileX_Thread"
     Symbol: filex_thread
     Name: FileX_Thread

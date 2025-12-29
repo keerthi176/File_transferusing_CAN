@@ -23,8 +23,9 @@
 		                                    "\r\n3. Enter 3 to create a text file on QSPI Flash and write pre-defined data."\
 		                                    "\r\n4. Enter 4 to create another text file on QSPI Flash, write and read pre-defined data."\
 		                                    "\r\n5. Enter 5 to test that it enters CAN loop"\
-                                            "\r\n6. Enter 6 to print the file 1 data"\
-		                                    "\r\n   Compare the read and write data"\
+                                            "\r\n6. Enter 6 to read file_1.txt and send it over CAN."\
+                                            "\r\n7. Enter 7 to start UART Echo Test."\
+                                            "\r\n8. Enter 8 to send firmware image over CAN."\
 		                                    "\r\nUser Input:  "
 
 /* Enum for Menu Options */
@@ -36,6 +37,8 @@ typedef enum menu_option
     FILE_2_WRITE_READ_COMPARE   = 4,
     CAN_TEST                    = 5,
     FILE_1_READ                 = 6,
+    UART_ECHO_TEST              = 7,
+    SEND_FIRMWARE_OVER_CAN      = 8,
 }menu_option_t;
 
 /* Macro for buffer size to read date and time */
@@ -119,6 +122,10 @@ typedef enum e_month_numbers
 #define PRINT_INFO_STR(str)  (app_rtt_print_data(RTT_OUTPUT_MESSAGE_APP_INFO_STR, sizeof(str), (str)))
 #define PRINT_ERR_STR(str)   (app_rtt_print_data(RTT_OUTPUT_MESSAGE_APP_ERR_STR, sizeof(str), (str)))
 #define ERROR_TRAP(err)      (app_rtt_print_data(RTT_OUTPUT_MESSAGE_APP_ERR_TRAP, sizeof(UINT *),&(err)))
+
+/* External memory buffer for FileX */
+extern FX_MEDIA g_fx_media0;
+extern uint8_t g_fx_media0_media_memory[G_FX_MEDIA0_MEDIA_MEMORY_SIZE];
 
 
 #endif /* FILEX_BLOCK_MEDIA_QSPI_LEVELX_EP_H_ */
