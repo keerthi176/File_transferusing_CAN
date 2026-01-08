@@ -13,10 +13,36 @@ bsp_ipc_semaphore_handle_t g_core_start_semaphore =
  * is called by main() when no RTOS is used.
  **********************************************************************************************************************/
 #include "bootloader.h"
+#include <stdbool.h>
+
+/* Simple validation of the application:
+ * 1. Stack Pointer (First word) must be in RAM (0x20000000 - 0x20020000)
+ * 2. Reset Vector (Second word) must be in Application Flash range
+ */
+static bool is_app_valid(void)
+{
+    uint32_t * p_app_vectors = (uint32_t *)APP_FIRMWARE_START_ADDRESS;
+    uint32_t stack_ptr = p_app_vectors[0];
+    uint32_t reset_vector = p_app_vectors[1];
+
+    /* RAM range check (RA4M2: 0x20000000, 128KB) */
+    if ((stack_ptr < 0x20000000) || (stack_ptr > 0x20020000))
+    {
+        return false;
+    }
+
+    /* Flash range check (Application starts at APP_FIRMWARE_START_ADDRESS) */
+    if (reset_vector < APP_FIRMWARE_START_ADDRESS)
+    {
+        return false;
+    }
+
+    return true;
+}
 
 void hal_entry(void)
 {
-    /* Check for magic word in backup registers to boot application */
+    /* Check for dead beef number in backup registers to boot application */
     uint32_t magic_word = ((uint32_t)R_SYSTEM->VBTBKR[0] << 24) |
                           ((uint32_t)R_SYSTEM->VBTBKR[1] << 16) |
                           ((uint32_t)R_SYSTEM->VBTBKR[2] << 8)  |
@@ -33,31 +59,36 @@ void hal_entry(void)
         R_SYSTEM->PRCR = (uint16_t) (0xA500 | 0); // Lock system registers
 
         /* All peripherals are in a reset state, so we can jump directly. */
-        
+
         /* 1. Disable all maskable interrupts */
         __disable_irq();
 
-        /* 2. Clear all pending interrupts in the NVIC */
+        /* 2. Set the Vector Table Offset Register to the application's vector table. */
+        SCB->VTOR = APP_FIRMWARE_START_ADDRESS;
+
+        /* 3. Clear all pending interrupts in the NVIC */
         for (IRQn_Type i = 0; i < 96; i++)
         {
             NVIC_ClearPendingIRQ(i);
         }
 
-        /* 3. Set the main stack pointer from the application's vector table */
+        /* 4. Set the main stack pointer from the application's vector table */
         __set_MSP(*(uint32_t *)APP_FIRMWARE_START_ADDRESS);
 
-        /* 4. Get the application's reset handler address from the vector table */
+        /* 5. Get the application's reset handler address from the vector table */
         void (*app_reset_handler)(void) = (void (*)(void))(*(uint32_t *)(APP_FIRMWARE_START_ADDRESS + 4));
 
-        /* 5. Jump to the application's reset handler */
+        /* 6. Jump to the application's reset handler */
         app_reset_handler();
     }
     else
     {
         /* No valid application marker found, proceed with bootloader */
-        bootloader_init(); // This initializes CAN and prints a startup message
+        bootloader_init();
 
-        SEGGER_RTT_printf(0, "\r\nPress '1' for CAN update, or '2' for UART (.hex) update...\r\n");
+        SEGGER_RTT_printf(0, "\r\nPress '1' for CAN based firmware upgrade\r\n");
+        SEGGER_RTT_printf(0," \r\nPress '2' for UART based firmware upgrade\r\n");
+        SEGGER_RTT_printf(0,"\r\n Press '3' for normal Boot App...\r\n");
 
         char rx_char = 0;
         while (1)
@@ -70,19 +101,36 @@ void hal_entry(void)
                 {
                     SEGGER_RTT_printf(0, "CAN mode selected. Waiting for firmware packets...\r\n");
                     /* The bootloader now waits for CAN messages indefinitely via interrupts */
-                    while(1)
+                    g_transfer_complete = false; 
+                    while(!g_transfer_complete)
                     {
-                         /* The CAN callback will handle everything. */
+                         /* The CAN callback will handle everything and set the flag when done. */
                     }
+                    
+                    SEGGER_RTT_printf(0, "Jump Requested from CAN Callback. Jumping...\r\n");
+                    bootloader_jump_to_app();
                 }
                 else if ('2' == rx_char)
                 {
                     SEGGER_RTT_printf(0, "UART mode selected. Send .hex file now...\r\n");
                     bootloader_uart_mode(); // This function will contain the UART loop
                 }
+                else if ('3' == rx_char)
+                {
+                    if (is_app_valid())
+                    {
+                        SEGGER_RTT_printf(0, "Valid App found. Jumping directly...\r\n");
+                        bootloader_jump_to_app();
+                    }
+                    else
+                    {
+                        SEGGER_RTT_printf(0, "No valid application found at 0x%X!\r\n", APP_FIRMWARE_START_ADDRESS);
+                        SEGGER_RTT_printf(0, "\r\nPress '1' for CAN, '2' for UART (.hex), or '3' to Boot App...\r\n");
+                    }
+                }
                 else
                 {
-                    SEGGER_RTT_printf(0, "Invalid selection. Press '1' or '2'.\r\n");
+                    SEGGER_RTT_printf(0, "Invalid selection. Press '1', '2' or '3'.\r\n");
                 }
             }
         }

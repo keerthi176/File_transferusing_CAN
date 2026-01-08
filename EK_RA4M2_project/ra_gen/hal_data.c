@@ -378,7 +378,7 @@ const can_instance_t g_can0 =
 { .p_ctrl = &g_can0_ctrl, .p_cfg = &g_can0_cfg, .p_api = &g_can_on_can };
 flash_hp_instance_ctrl_t g_flash0_ctrl;
 const flash_cfg_t g_flash0_cfg =
-{ .data_flash_bgo = true, .p_callback = flash_callback, .p_context = NULL,
+{ .data_flash_bgo = false, .p_callback = flash_callback, .p_context = NULL,
 #if defined(VECTOR_NUMBER_FCU_FRDYI)
     .irq                 = VECTOR_NUMBER_FCU_FRDYI,
 #else
